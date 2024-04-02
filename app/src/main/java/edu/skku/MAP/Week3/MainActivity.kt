@@ -17,91 +17,25 @@ import android.widget.LinearLayout
 import android.widget.ListAdapter
 import android.widget.ListView
 import android.widget.Toast
+import android.util.Log
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        var linearLayout = findViewById<LinearLayout>(R.id.sub_layout)
-        var btn = findViewById<Button>(R.id.button)
+        val items = ArrayList<ChatRoom>()
+        items.add(ChatRoom("Kakao T", "Please leave review.", R.drawable.ic_launcher_background, 1, "8:24 p.m.", 12 ))
+        items.add(ChatRoom("SKKU Software", "Anybody taking MAP lecture? This week lab session is too hard. Can anybody give me the hint? I will be very happy if you help. If nobody help me, I will be very sad.", R.drawable.ic_launcher_background, 512, "7:15 p.m.", 5 ))
+        items.add(ChatRoom("Brother", "Hey.", R.drawable.ic_launcher_background, 1, "4:21 p.m." , 7))
+        items.add(ChatRoom("Family", "Emoji", R.drawable.ic_launcher_background, 4, "4:05 p.m." , 1))
+        items.add(ChatRoom("Study group", "See you tomorrow!", R.drawable.ic_launcher_background, 5, "4:01 p.m." , 2))
+        items.add(ChatRoom("Yogiyo", "How was the food?", R.drawable.ic_launcher_background, 1, "3:24 p.m.", 0 ))
+        items.add(ChatRoom("lorem ipsum", "dolor", R.drawable.ic_launcher_background, 6, "2:22 p.m." , 3))
+        items.add(ChatRoom("Placeholder", "Placeholder", R.drawable.ic_launcher_background, 12, "11:58 a.m." , 0))
 
-        btn.setOnClickListener {
-            val layoutInflater: LayoutInflater =
-                applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as
-                        LayoutInflater
-            layoutInflater.inflate(R.layout.sub_layout, linearLayout, true)
-
-            var img1 = findViewById<ImageView>(R.id.imageView)
-            var img2 = findViewById<ImageView>(R.id.imageView2)
-
-            img1.setImageResource(R.drawable.bbq)
-            img2.setImageResource(R.drawable.bhc)
-        }
-
-        var pizza_btn = findViewById<Button>(R.id.button1)
-        var hamburger_btn = findViewById<Button>(R.id.button2)
-        var chicken_btn = findViewById<Button>(R.id.button3)
-        var items = arrayListOf<Restaurant>()
-        var mainList = findViewById<ListView>(R.id.listview)
-
-        pizza_btn.setOnClickListener{
-            items = arrayListOf<Restaurant>()
-            items.add(Restaurant(R.drawable.domino, "domino"))
-            items.add(Restaurant(R.drawable.pizzahut, "pizzahut"))
-            items.add(Restaurant(R.drawable.pizzanarachickengongju, "pizzanarachickengongju"))
-            val listAdaptor = CustomAdapter(this, items)
-            mainList.adapter = listAdaptor
-        }
-
-        hamburger_btn.setOnClickListener{
-            items = arrayListOf<Restaurant>()
-            items.add(Restaurant(R.drawable.burgerking, "burgerking"))
-            items.add(Restaurant(R.drawable.lotteria, "lotteria"))
-            items.add(Restaurant(R.drawable.mcdonalds, "mcdonalds"))
-            items.add(Restaurant(R.drawable.momstouch, "momstouch"))
-            val listAdaptor = CustomAdapter(this, items)
-            mainList.adapter = listAdaptor
-        }
-
-        chicken_btn.setOnClickListener{
-            items = arrayListOf<Restaurant>()
-            items.add(Restaurant(R.drawable.bbq, "bbq"))
-            items.add(Restaurant(R.drawable.bhc, "bhc"))
-            items.add(Restaurant(R.drawable.goobne, "goobne"))
-            items.add(Restaurant(R.drawable.pizzanarachickengongju, "pizzanarachickengongju"))
-            val listAdaptor = CustomAdapter(this, items)
-            mainList.adapter = listAdaptor
-        }
-
-    }
-}
-class Restaurant (val id: Int, val name: String)
-class CustomAdapter(val context: Context, val items: ArrayList<Restaurant>): BaseAdapter(){
-    override fun getCount():Int {
-        return items.size
-    }
-    override fun getItem(position: Int): Any{
-        return items.get(position)
-    }
-    override fun getItemId(position: Int) : Long{
-        return 0
-    }
-    override fun getView(i:Int, cvtView: View?, parent: ViewGroup?):View{
-        val inflater: LayoutInflater = LayoutInflater.from(context)
-        var view: View = inflater.inflate(R.layout.create_item, null)
-        var imgView = view.findViewById<ImageView>(R.id.imageView7)
-        var textView = view.findViewById<TextView>(R.id.textView3)
-        textView.setText(items.get(i).name)
-        imgView.setImageResource(items.get(i).id)
-
-        return view
-
+        val myAdapter = ChatRoomAdapter(items, applicationContext)
+        val listView = findViewById<ListView>(R.id.listViewChatRoom)
+        listView.adapter = myAdapter
     }
 }
