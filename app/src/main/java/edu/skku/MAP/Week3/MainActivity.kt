@@ -1,50 +1,56 @@
 package edu.skku.MAP.Week3
-
-import android.app.Activity
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.util.Log
 import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.TextView
+import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
-    companion object{
-        const val EXT_NAME = "extra_key_name"
-        const val EXT_AGE = "extra_key_AGE"
-        const val REQUEST_CODE = 100
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnNewActivity = findViewById<Button>(R.id.buttonNewActivity)
-        btnNewActivity.setOnClickListener {
-            val editTextName = findViewById<EditText>(R.id.editTextName)
-            val editTextAge = findViewById<EditText>(R.id.editTextAge)
-
-            val name = editTextName.text.toString()
-            val age = editTextAge.text.toString().toInt()
-
-            val intent = Intent(this, Activity2::class.java).apply{
-                putExtra(EXT_NAME, name)
-                putExtra(EXT_AGE, age)
+        val button = findViewById<Button>(R.id.button)
+        val textView = findViewById<TextView>(R.id.textView)
+        button.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch(){
+                textView.text = task().await()
             }
-            startActivity(intent)
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                editTextName.text.clear()
-                editTextAge.text.clear()
-            }, 2000)
-
         }
+    }
+    fun task() = CoroutineScope(Dispatchers.IO).async{
+
+        val totalIterations = 100_000_000
+        val updateInterval = 1_000_000
+        var insideCircleCount = 0
+        val textView = findViewById<TextView>(R.id.textView)
+
+        for (i in 1..totalIterations / updateInterval) {
+            for (j in 1..updateInterval){
+                val x = Math.random()
+                val y = Math.random()
+
+                if (x * x + y * y <= 1.0) {
+                    insideCircleCount++
+                }
+            }
+            CoroutineScope(Dispatchers.Main).launch(){
+                textView.text = task2(i, insideCircleCount).await()
+            }
+        }
+        Thread.sleep(1)
+        "Done!\nEstimation: ${String.format("%.6f", 4.0 * insideCircleCount / totalIterations)}"
+    }
+
+    fun task2(progress:Int, insideCircleCount:Int) = CoroutineScope(Dispatchers.IO).async {
+
+        val updateInterval = 1_000_000
+        val piEstimation = 4.0 * insideCircleCount / (progress * updateInterval)
+        val piEstimation6f = String.format("%.6f", piEstimation)
+
+        "Done $progress%...\nCurrent estimation: ${piEstimation6f}"
     }
 }
